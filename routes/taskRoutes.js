@@ -1,24 +1,8 @@
 const express = require("express");
+const mysqlDb = require("../databases/mysqlDb");
 const router = express.Router();
-const mysql = require("mysql2");
+
 const { check, validationResult } = require("express-validator");
-require("dotenv").config();
-
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
-
-// Connect to the database
-db.connect((err) => {
-  if (err) {
-    console.error("Error connecting to the database: " + err);
-    return;
-  }
-  console.log("Connected to MySQL database");
-});
 
 const formatValidationErrors = (validationErrors) => {
   let output = {};
@@ -62,7 +46,7 @@ router.post("/", taskValidationRules, (req, res) => {
   const { name, description, completed } = req.body;
   const newItem = { name, description, completed };
 
-  db.query("INSERT INTO tasks SET ?", newItem, (err, result) => {
+  mysqlDb.query("INSERT INTO tasks SET ?", newItem, (err, result) => {
     if (err) {
       res.status(500).json({ error: "Failed to create a task" });
     } else {
@@ -72,7 +56,7 @@ router.post("/", taskValidationRules, (req, res) => {
 });
 
 router.get("/", (req, res) => {
-  db.query("SELECT * FROM tasks", (err, results) => {
+  mysqlDb.query("SELECT * FROM tasks", (err, results) => {
     if (err) {
       res.status(500).json({ error: "Failed to fetch tasks" });
     } else {
@@ -83,7 +67,7 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
   const itemId = req.params.id;
-  db.query(
+  mysqlDb.query(
     "SELECT * FROM tasks WHERE id = ? LIMIT 1",
     [itemId],
     (err, result) => {
@@ -109,7 +93,7 @@ router.put("/:id", taskValidationRules, (req, res) => {
 
   const itemId = req.params.id;
   const updatedItem = req.body;
-  db.query(
+  mysqlDb.query(
     "UPDATE tasks SET ? WHERE id = ?",
     [updatedItem, itemId],
     (err, result) => {
