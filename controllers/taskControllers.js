@@ -1,19 +1,6 @@
 const mysqlDb = require("../databases/mysqlDb");
+const helper = require("../utilities/helperFunctions");
 const { validationResult } = require("express-validator");
-
-const formatValidationErrors = (validationErrors) => {
-  let output = {};
-
-  validationErrors.forEach((error) => {
-    if (error.path in output) {
-      output[error.path].push(error.msg);
-    } else {
-      output[error.path] = [error.msg];
-    }
-  });
-
-  return output;
-};
 
 exports.getTasks = (req, res) => {
   mysqlDb.query("SELECT * FROM tasks", (err, results) => {
@@ -31,7 +18,7 @@ exports.createTask = (req, res) => {
   if (!errors.isEmpty()) {
     return res
       .status(422)
-      .json({ errors: formatValidationErrors(errors.array()) });
+      .json({ errors: helper.formatValidationErrors(errors.array()) });
   }
 
   const { name, description, completed } = req.body;
@@ -69,7 +56,7 @@ exports.editTask = (req, res) => {
   if (!errors.isEmpty()) {
     return res
       .status(422)
-      .json({ errors: formatValidationErrors(errors.array()) });
+      .json({ errors: helper.formatValidationErrors(errors.array()) });
   }
 
   const itemId = req.params.id;
