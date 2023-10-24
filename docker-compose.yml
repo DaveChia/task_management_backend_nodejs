@@ -11,5 +11,5 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: Mypassword21&
       MYSQL_DATABASE: task_manager
-  ports:
-    - "3306:3306" # Map the container port to the host port
+    ports:
+      - "3306:3306"
