@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");
 exports.getTasks = (req, res) => {
   mysqlDb.query("SELECT * FROM tasks", (err, results) => {
     if (err) {
-      res.status(500).json({ error: "Failed to fetch tasks" });
+      res.status(500).json({ error: err });
     } else {
       res.status(200).json({ data: results });
     }
