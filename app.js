@@ -6,9 +6,20 @@ const bodyParser = require("body-parser");
 
 require("dotenv").config();
 
+const apiKeyMiddleware = (req, res, next) => {
+  const apiKey = req.headers["x-api-key"];
+
+  if (apiKey === process.env.API_KEY) {
+    next(); // API key is valid, continue with the request
+  } else {
+    res.status(401).json({ error: "Unauthorized: Invalid API key" });
+  }
+};
+
 // Create an Express application
 const app = express();
 app.use(cors()); //  TODO: Add CORS rules
+app.use("/tasks", apiKeyMiddleware);
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
