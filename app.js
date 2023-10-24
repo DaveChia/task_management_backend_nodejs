@@ -34,9 +34,7 @@ app.post("/tasks", (req, res) => {
     if (err) {
       res.status(500).json({ error: "Failed to create a task" });
     } else {
-      res
-        .status(201)
-        .json({ message: "task created successfully", id: result.insertId });
+      res.status(201).json({ message: "task created successfully" });
     }
   });
 });
@@ -46,7 +44,7 @@ app.get("/tasks", (req, res) => {
     if (err) {
       res.status(500).json({ error: "Failed to fetch items" });
     } else {
-      res.status(200).json(results);
+      res.status(200).json({ data: results });
     }
   });
 });
