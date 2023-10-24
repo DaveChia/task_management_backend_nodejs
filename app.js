@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql2");
+const { check, validationResult } = require("express-validator");
 const bodyParser = require("body-parser");
 
 require("dotenv").config();
@@ -29,9 +30,48 @@ db.connect((err) => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/tasks", (req, res) => {
+const formatValidationErrors = (validationErrors) => {
+  let output = {};
+
+  validationErrors.forEach((error) => {
+    if (error.path in output) {
+      output[error.path].push(error.msg);
+    } else {
+      output[error.path] = [error.msg];
+    }
+  });
+
+  return output;
+};
+
+const taskValidationRules = [
+  check("name")
+    .notEmpty()
+    .withMessage("This field is required.")
+    .isLength({ min: 10, max: 255 })
+    .withMessage("This field must be between 10 and 255 characters inclusive."),
+  check("description")
+    .notEmpty()
+    .withMessage("This field is required.")
+    .isLength({ min: 10 })
+    .withMessage("This field must be at least 10 chacacters inclusive."),
+  check("completed")
+    .isBoolean()
+    .withMessage("This field must be at a boolean character."),
+];
+
+app.post("/tasks", taskValidationRules, (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .json({ errors: formatValidationErrors(errors.array()) });
+  }
+
   const { name, description, completed } = req.body;
   const newItem = { name, description, completed };
+
   db.query("INSERT INTO tasks SET ?", newItem, (err, result) => {
     if (err) {
       res.status(500).json({ error: "Failed to create a task" });
@@ -68,7 +108,15 @@ app.get("/tasks/:id", (req, res) => {
   );
 });
 
-app.put("/tasks/:id", (req, res) => {
+app.put("/tasks/:id", taskValidationRules, (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .json({ errors: formatValidationErrors(errors.array()) });
+  }
+
   const itemId = req.params.id;
   const updatedItem = req.body;
   db.query(
