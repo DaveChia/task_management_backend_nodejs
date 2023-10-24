@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 
@@ -6,6 +7,7 @@ require("dotenv").config();
 
 // Create an Express application
 const app = express();
+app.use(cors()); //  TODO: Add CORS rules
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -42,11 +44,28 @@ app.post("/tasks", (req, res) => {
 app.get("/tasks", (req, res) => {
   db.query("SELECT * FROM tasks", (err, results) => {
     if (err) {
-      res.status(500).json({ error: "Failed to fetch items" });
+      res.status(500).json({ error: "Failed to fetch tasks" });
     } else {
       res.status(200).json({ data: results });
     }
   });
+});
+
+app.get("/tasks/:id", (req, res) => {
+  const itemId = req.params.id;
+  db.query(
+    "SELECT * FROM tasks WHERE id = ? LIMIT 1",
+    [itemId],
+    (err, result) => {
+      if (err) {
+        res.status(500).json({ error: "Failed to fetch task" });
+      } else if (result.affectedRows === 0) {
+        res.status(404).json({ message: "Task not found" });
+      } else {
+        res.status(200).json({ data: result[0] });
+      }
+    }
+  );
 });
 
 app.put("/tasks/:id", (req, res) => {
