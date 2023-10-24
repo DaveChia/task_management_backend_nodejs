@@ -22,7 +22,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //  CORS Middleware
-app.use(cors()); //  TODO: Add CORS rules
+app.use(
+  cors({
+    origin: process.env.FRONTEND_APP_URL,
+    methods: "GET,POST,PUT", // HTTP methods to allow
+    allowedHeaders: ["Content-Type", "Authorization", "x-api-key", "accept"],
+    preflightContinue: false, // Pass the CORS preflight response to the route handlers
+  })
+);
 
 //  Routes
 app.use("/tasks", apiKeyMiddleware, taskRoutes);
