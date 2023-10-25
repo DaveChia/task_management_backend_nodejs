@@ -5,7 +5,7 @@ const { validationResult } = require("express-validator");
 exports.getTasks = (req, res) => {
   mysqlDb.query("SELECT * FROM tasks", (err, results) => {
     if (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ error: "Failed to create a task" });
     } else {
       res.status(200).json({ data: results });
     }
@@ -26,7 +26,7 @@ exports.createTask = (req, res) => {
 
   mysqlDb.query("INSERT INTO tasks SET ?", newItem, (err, result) => {
     if (err) {
-      res.status(500).json({ error: "Failed to create a task" });
+      res.status(500).json({ error: "Failed to retreive tasks" });
     } else {
       res.status(201).json({ message: "task created successfully" });
     }
