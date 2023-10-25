@@ -34,8 +34,8 @@ npm install
 ```
 DB_HOST=127.0.0.1 // This should be the MySql Docker instance's host
 DB_USER=root
-DB_PASSWORD=
-DB_NAME=task_manager
+DB_PASSWORD=  //  This should be the MYSQL_ROOT_PASSWORD defined in docker-compose.yml
+DB_NAME=task_manager   //  This should be the MYSQL_DATABASE defined in
 
 API_KEY=yoursecretapikey    // This is the api key required by the backend API server to authorize api calls
 
@@ -48,7 +48,22 @@ FRONTEND_APP_URL=http://localhost:5173    // This is the url of the frontend web
 docker-compose up --build
 ```
 
-This will start the Docker container, and app will be accessible at http://localhost:3000.
+This will start the Docker container, and app will be accessible at http://localhost:8082.
+
+5. Create the tasks table in the database
+
+```
+CREATE TABLE `tasks` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `completed` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_tasks_completed` (`completed`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
 ### Docker Compose Services
 
