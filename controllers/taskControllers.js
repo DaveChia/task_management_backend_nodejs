@@ -3,13 +3,16 @@ const helper = require("../utilities/helperFunctions");
 const { validationResult } = require("express-validator");
 
 exports.getTasks = (req, res) => {
-  mysqlDb.query("SELECT * FROM tasks", (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Failed to create a task" });
-    } else {
-      res.status(200).json({ data: results });
+  mysqlDb.query(
+    "SELECT id, name, description, completed, created_at FROM tasks ORDER BY completed ASC, id ASC",
+    (err, results) => {
+      if (err) {
+        res.status(500).json({ error: "Failed to retrieve tasks" });
+      } else {
+        res.status(200).json({ data: results });
+      }
     }
-  });
+  );
 };
 
 exports.createTask = (req, res) => {
@@ -36,7 +39,7 @@ exports.createTask = (req, res) => {
 exports.getTask = (req, res) => {
   const itemId = req.params.id;
   mysqlDb.query(
-    "SELECT * FROM tasks WHERE id = ? LIMIT 1",
+    "SELECT id, name, description, completed, created_at, updated_at FROM tasks WHERE id = ? LIMIT 1",
     [itemId],
     (err, result) => {
       if (err) {
