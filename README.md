@@ -42,13 +42,16 @@ API_KEY=yoursecretapikey    // This is the api key required by the backend API s
 FRONTEND_APP_URL=http://localhost:5173    // This is the url of the frontend web app that will call this server
 ```
 
-4. Build and start the project using Docker Compose:
+4. Set up the docker-compose.yml, copy docker-compose.example.yml into docker-compose.yml. Configure the ports if needed
+
+5. Build and start the project using Docker Compose:
 
 ```
-docker-compose up --build
+docker-compose up --build db
+docker-compose up --build app
 ```
 
-This will start the Docker container, and app will be accessible at http://localhost:8082.
+This will start the Docker container, and app will be accessible at http://localhost:80.
 
 5. Create the tasks table in the database
 
